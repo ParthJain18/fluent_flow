@@ -10,15 +10,13 @@ import '../utils/preference_util.dart';
 import '../utils/translations.dart';
 
 class TranslationInput extends StatefulWidget {
-  const TranslationInput({super.key});
-
+  const TranslationInput({Key? key});
 
   @override
   _TranslationInputState createState() => _TranslationInputState();
 }
 
 class _TranslationInputState extends State<TranslationInput> {
-
   final _translationService = TranslationService();
 
   final TextEditingController _messageController = TextEditingController();
@@ -68,6 +66,7 @@ class _TranslationInputState extends State<TranslationInput> {
   play(String content) {
     // Add code here
   }
+
   void _swapIsMe() {
     setState(() {
       isMe = !isMe;
@@ -87,19 +86,20 @@ class _TranslationInputState extends State<TranslationInput> {
 
     setState(() {
       _messages.add(Message(
-          content: _lastWords,
-          translatedContent: 'Loading...',
-          isMe: isMe,
-          isLoading: true));
+        content: _lastWords,
+        translatedContent: 'Loading...',
+        isMe: isMe,
+        isLoading: true,
+      ));
     });
 
     String targetLanguage = isMe ? languageCode1 : languageCode2;
 
-    final translatedContent = await _translationService.translate(_lastWords, targetLanguage);
+    final translatedContent =
+    await _translationService.translate(_lastWords, targetLanguage);
 
     _lastWords = '';
     _messageController.clear();
-
 
     setState(() {
       _messages.last.translatedContent = translatedContent;
@@ -123,126 +123,171 @@ class _TranslationInputState extends State<TranslationInput> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height - 150,
       child: Column(
-        children: [
-          Expanded(
-            child: _messages.isEmpty
-                ? const Center(
-                    child: Text('No messages yet'),
-                  )
-                : ListView.builder(
-              controller: _controller,
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return Align(
-                  alignment: message.isMe
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: FractionallySizedBox(
-                    widthFactor: 0.9,
-                    child: Container(
-                      margin: const EdgeInsets.all(8.0),
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: message.isMe
-                            ? Colors.blue[100]
-                            : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-                                    child: Text(
-                                      message.content,
-                                      textAlign: message.isMe
-                                          ? TextAlign.end
-                                          : TextAlign.start,
-                                      style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black54
-                                      ),
-                                      softWrap: true,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-                                    child: message.isLoading
-                                        ? const CircularProgressIndicator()
-                                        : Text(
-                                      message.translatedContent,
-                                      textAlign: message.isMe
-                                          ? TextAlign.end
-                                          : TextAlign.start,
-                                      style: const TextStyle(
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.bold),
-                                      softWrap: true,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                  onPressed: _swapIsMe, icon: const Icon(Icons.swap_horiz_rounded)),
-              IconButton(
-                  onPressed: _swapIsMe, icon: const Icon(CupertinoIcons.sparkles)),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _messageController,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      labelText: 'Type a message',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.send_rounded),
-                onPressed: _sendMessage,
-              ),
-              IconButton(
-                icon: const Icon(Icons.mic),
-                onPressed: _startListening,
-              ),
-            ],
-          ),
-        ],
+          children: [
+      Expanded(
+      child: _messages.isEmpty
+      ? const Center(
+          child: Text('No messages yet'),
+    )
+        : ListView.builder(
+    controller: _controller,
+    itemCount: _messages.length,
+    itemBuilder: (context, index) {
+    final message = _messages[index];
+    return Align(
+    alignment: message.isMe
+    ? Alignment.centerRight
+        : Alignment.centerLeft,
+    child: FractionallySizedBox(
+    widthFactor: 0.9,
+    child: Container(
+    margin: const EdgeInsets.all(8.0),
+    padding: const EdgeInsets.all(10.0),
+    decoration: BoxDecoration(
+    color: message.isMe
+    ? Colors.white
+        : Colors.orange,
+    borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+    children: [
+    Expanded(
+    child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment:
+    CrossAxisAlignment.stretch,
+    children: [
+    SizedBox(
+    width:
+    MediaQuery.of(context).size.width *
+    0.5,
+    child: Padding(
+    padding: const EdgeInsets.fromLTRB(
+    10, 10, 10, 5),
+    child: Text(
+    message.content,
+    textAlign: message.isMe
+    ? TextAlign.end
+        : TextAlign.start,
+    style: const TextStyle(
+    fontSize: 17,
+    fontWeight: FontWeight.bold,
+    color: Colors.black54,
+    ),
+    softWrap: true,
+    ),
+    ),
+    ),
+    SizedBox(
+    width:
+    MediaQuery.of(context).size.width *
+    0.5,
+    child: Padding(
+    padding: const EdgeInsets.fromLTRB(
+    10, 5, 10, 10),
+    child: message.isLoading
+    ? const CircularProgressIndicator()
+        : Text(
+    message.translatedContent,
+    textAlign: message.isMe
+    ? TextAlign.end
+        : TextAlign.start,
+    style: const TextStyle(
+    fontSize: 19,
+    fontWeight: FontWeight.bold,
+    ),
+    softWrap: true,
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+    );
+    },
+    ),
+    ),
+    Row(
+    mainAxisAlignment: MainAxisAlignment.spaceAround,
+    children: [
+    IconButton(
+    onPressed: _swapIsMe,
+    icon: const Icon(
+    Icons.swap_horiz_rounded,
+    color: Colors.black, // Change icon color here
+    size: 30, // Change icon size here
+    ),
+    ),
+    IconButton(
+    onPressed: () {
+    showModalBottomSheet(
+    context: context,
+    builder: (builder) {
+    return SizedBox(
+    height: 400,
+    child: Center(
+    child: IconButton(
+    icon: const Icon(Icons.close),
+    onPressed: () {
+    Navigator.pop(context);
+    },
+    ),
+    ),
+    );
+    },
+    );
+    },
+    icon: const Icon(
+    CupertinoIcons.sparkles,
+    color: Colors.black, // Change icon color here
+    size: 30, // Change icon size here
+    ),
+    ),
+    Expanded(
+    child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: TextField(
+    controller: _messageController,
+    keyboardType: TextInputType.text,
+    decoration: const InputDecoration(
+    labelText: 'Type a message',
+    border: OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(8)),
+    ),
+    ),
+    ),
+    ),
+    ),
+    IconButton(
+    icon: const Icon(
+    Icons.send_rounded,
+    color: Colors.black, // Change icon color here
+    size:30, // Change icon size here
+    ),
+      onPressed: _sendMessage,
+    ),
+      IconButton(
+        icon: const Icon(
+          Icons.mic,
+          color: Colors.black, // Change icon color here
+          size: 30, // Change icon size here
+        ),
+        onPressed: _startListening,
+      ),
+    ],
+    ),
+          ],
       ),
     );
   }
 }
+
