@@ -1,5 +1,3 @@
-//write an empty page with text in the middle
-
 import 'package:flutter/material.dart';
 
 
@@ -15,4 +13,4 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-}dd
+}

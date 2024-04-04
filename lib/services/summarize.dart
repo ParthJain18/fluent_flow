@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SummarizationService {
-  Future<List> summarize(String text) async {
+  Future<String> summarize(String text) async {
 
     print('Generating suggestions for $text...');
 

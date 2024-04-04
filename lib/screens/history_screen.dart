@@ -1,5 +1,3 @@
-//write an empty page with text in the middle
-
 import 'package:flutter/material.dart';
 
 
@@ -11,7 +9,7 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Live Translation')),
       body: const Center(
-        child: Text('History Screen'),
+        child: Text("Coming Soon..."),
       ),
     );
   }
