@@ -25,6 +25,7 @@ class _TranslationScreenState extends State<TranslationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -34,6 +35,7 @@ class _TranslationScreenState extends State<TranslationScreen> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+
             Flexible(child: TranslationInput()),
             SizedBox(height: 16),
           ],

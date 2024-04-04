@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:fluent_flow/utils/translations.dart';
 
@@ -25,8 +27,8 @@ class DropDownWidget extends StatelessWidget {
       value: value,
       icon: const Icon(Icons.expand_more, color: Colors.grey),
       iconSize: 24,
-      elevation: 16,
-      style: const TextStyle(color: Colors.black),
+      elevation: 26,
+      style: const TextStyle(  fontWeight:FontWeight.bold ,color: Colors.black87),
       onChanged: onChangedLanguage,
       items: items,
     );

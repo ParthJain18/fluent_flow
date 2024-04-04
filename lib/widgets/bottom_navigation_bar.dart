@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluent_flow/screens/translation_screen.dart';
 import 'package:fluent_flow/screens/settings_screen.dart';
+import 'package:fluent_flow/screens/settings_screen.dart';
 import 'package:fluent_flow/screens/camera_screen.dart';
 import 'package:fluent_flow/screens/history_screen.dart';
 
 
 class CustomBottomNavigationBar extends StatefulWidget {
-  const CustomBottomNavigationBar({super.key});
+  const   CustomBottomNavigationBar({super.key});
 
   @override
   _CustomBottomNavigationBarState createState() => _CustomBottomNavigationBarState();
