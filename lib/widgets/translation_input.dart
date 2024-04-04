@@ -6,24 +6,28 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io' show Platform;
 import 'package:fluent_flow/services/translation_service.dart';
 
+import '../services/suggestions.dart';
 import '../utils/preference_util.dart';
 import '../utils/translations.dart';
 
 class TranslationInput extends StatefulWidget {
   const TranslationInput({super.key});
 
-
   @override
   _TranslationInputState createState() => _TranslationInputState();
 }
 
 class _TranslationInputState extends State<TranslationInput> {
-
   final _translationService = TranslationService();
+  final _suggestionService = SuggestionService();
 
   final TextEditingController _messageController = TextEditingController();
   final List<Message> _messages = [];
+  // final List<Message> _messages = [];
   final ScrollController _controller = ScrollController();
+  final List<String> _suggestions = [];
+  // final List<String> _suggestions = [];
+
   bool isMe = true;
 
   late stt.SpeechToText _speech;
@@ -74,43 +78,6 @@ class _TranslationInputState extends State<TranslationInput> {
     });
   }
 
-  void _sendMessage() async {
-    _lastWords = _messageController.text;
-    if (_lastWords.isEmpty) {
-      return;
-    }
-    String language1 = await PreferenceUtil.getLanguage1();
-    String language2 = await PreferenceUtil.getLanguage2();
-
-    String languageCode1 = Translations.getLanguageCode(language1);
-    String languageCode2 = Translations.getLanguageCode(language2);
-
-    setState(() {
-      _messages.add(Message(
-          content: _lastWords,
-          translatedContent: 'Loading...',
-          isMe: isMe,
-          isLoading: true));
-    });
-
-    String targetLanguage = isMe ? languageCode1 : languageCode2;
-
-    final translatedContent = await _translationService.translate(_lastWords, targetLanguage);
-
-    _lastWords = '';
-    _messageController.clear();
-
-
-    setState(() {
-      _messages.last.translatedContent = translatedContent;
-      _messages.last.isLoading = false;
-    });
-
-    _swapIsMe();
-    _scrollToBottom();
-    _stopListening();
-  }
-
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
@@ -123,6 +90,80 @@ class _TranslationInputState extends State<TranslationInput> {
     });
   }
 
+  void _summarizeConversation() {
+
+  }
+
+  void _sendMessage() async {
+    _lastWords = _messageController.text;
+    if (_lastWords.isEmpty) {
+      return;
+    }
+    String language1 = await PreferenceUtil.getLanguage1();
+    String language2 = await PreferenceUtil.getLanguage2();
+
+    String languageCode1 = Translations.getLanguageCode(language1);
+    String languageCode2 = Translations.getLanguageCode(language2);
+    String targetLanguage = isMe ? languageCode1 : languageCode2;
+    String speakerLanguage = isMe ? languageCode2 : languageCode1;
+
+    String englishTranslatedContent = '';
+    setState(() {
+      _suggestions.clear();
+    });
+
+    setState(() {
+      _messages.add(Message(
+          content: _lastWords,
+          translatedContent: 'Loading...',
+          isMe: isMe,
+          isLoading: true));
+    });
+
+    _messageController.clear();
+
+    final translatedContent =
+        await _translationService.translate(_lastWords, targetLanguage);
+
+    if (targetLanguage == 'en') {
+      print('translatedContent: $translatedContent');
+      englishTranslatedContent = translatedContent;
+    } else if (speakerLanguage == 'en') {
+      englishTranslatedContent = _lastWords;
+      print('translatedContent: $englishTranslatedContent');
+    } else {
+      englishTranslatedContent =
+          await _translationService.translate(_lastWords, 'en');
+      print('translatedContent: $englishTranslatedContent');
+    }
+
+    _lastWords = '';
+
+    setState(() {
+      _messages.last.translatedContent = translatedContent;
+      _messages.last.englishTranslatedContent = englishTranslatedContent;
+      _messages.last.isLoading = false;
+    });
+
+    if (!isMe) {
+      String text = _messages.last.englishTranslatedContent;
+      final suggestions = await _suggestionService.generateSuggestions(text);
+      if (suggestions.isNotEmpty) {
+        for (var suggestion in suggestions) {
+          _suggestions.add(languageCode2 == 'en'
+              ? suggestion
+              : await _translationService.translate(suggestion, languageCode2));
+          // print('suggestion: $suggestion');
+          // print('suggestion: $_suggestions');
+          // print(_suggestions.runtimeType);
+        }
+      }
+    }
+
+    _swapIsMe();
+    _scrollToBottom();
+    _stopListening();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,86 +177,125 @@ class _TranslationInputState extends State<TranslationInput> {
                     child: Text('No messages yet'),
                   )
                 : ListView.builder(
-              controller: _controller,
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return Align(
-                  alignment: message.isMe
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: FractionallySizedBox(
-                    widthFactor: 0.9,
-                    child: Container(
-                      margin: const EdgeInsets.all(8.0),
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: message.isMe
-                            ? Colors.blue[100]
-                            : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-                                    child: Text(
-                                      message.content,
-                                      textAlign: message.isMe
-                                          ? TextAlign.end
-                                          : TextAlign.start,
-                                      style: const TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black54
+                        controller: _controller,
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final message = _messages[index];
+                          return Align(
+                            alignment: message.isMe
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: FractionallySizedBox(
+                              widthFactor: 0.9,
+                              child: Container(
+                                margin: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  color: message.isMe
+                                      ? Colors.blue[100]
+                                      : Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      10, 10, 10, 5),
+                                              child: Text(
+                                                message.content,
+                                                textAlign: message.isMe
+                                                    ? TextAlign.end
+                                                    : TextAlign.start,
+                                                style: const TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black54),
+                                                softWrap: true,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      10, 5, 10, 10),
+                                              child: message.isLoading
+                                                  ? const CircularProgressIndicator()
+                                                  : Text(
+                                                      message.translatedContent,
+                                                      textAlign: message.isMe
+                                                          ? TextAlign.end
+                                                          : TextAlign.start,
+                                                      style: const TextStyle(
+                                                          fontSize: 19,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      softWrap: true,
+                                                    ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      softWrap: true,
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-                                    child: message.isLoading
-                                        ? const CircularProgressIndicator()
-                                        : Text(
-                                      message.translatedContent,
-                                      textAlign: message.isMe
-                                          ? TextAlign.end
-                                          : TextAlign.start,
-                                      style: const TextStyle(
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.bold),
-                                      softWrap: true,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
+                      ),
+
+          ),
+          if (_suggestions.isNotEmpty)
+            SizedBox(
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _suggestions.length,
+                itemBuilder: (context, index) {
+                  final suggestion = _suggestions[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: OutlinedButton(
+
+                      onPressed: () {
+                        _messageController.text = suggestion;
+                      },
+                      child: Text(
+                          suggestion,
+                        style: const TextStyle(color: Colors.black),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               IconButton(
-                  onPressed: _swapIsMe, icon: const Icon(Icons.swap_horiz_rounded)),
+                  onPressed: _swapIsMe,
+                  icon: const Icon(Icons.swap_horiz_rounded)),
               IconButton(
-                  onPressed: _swapIsMe, icon: const Icon(CupertinoIcons.sparkles)),
+                  onPressed: _summarizeConversation,
+                  icon: const Icon(CupertinoIcons.sparkles)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
