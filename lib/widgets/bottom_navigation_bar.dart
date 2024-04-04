@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluent_flow/screens/translation_screen.dart';
 import 'package:fluent_flow/screens/settings_screen.dart';
+import 'package:fluent_flow/screens/settings_screen.dart';
 import 'package:fluent_flow/screens/camera_screen.dart';
 import 'package:fluent_flow/screens/history_screen.dart';
 
