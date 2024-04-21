@@ -14,4 +14,6 @@ The user can also generate a summary for the conversation if needed, and the app
 | ![WhatsApp Image 2024-04-04 at 23 46 03_1f69797a](https://github.com/ParthJain18/fluent_flow/assets/95374592/e12cbc69-32a6-4e5a-a818-57254e6b91b6) |
 
 
+## Flowchart
+![image](https://github.com/ParthJain18/fluent_flow/assets/95374592/3c83d68b-b25b-448e-9a18-942ee6a68e2a)
 
