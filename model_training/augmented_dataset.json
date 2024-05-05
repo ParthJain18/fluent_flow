@@ -113,6 +113,10 @@
     {
         "tag": "suggestion_no",
         "examples": [
+            "what's on news today?",
+            "what's on news?",
+            "what's the latest phone?",
+            "what's the latest news?",
             "What is my account balance?",
             "Schedule a meeting with John for next Tuesday.",
             "Remind me to buy groceries tomorrow.",

@@ -16,3 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(router)
+
+# to run:
+# uvicorn main:app --reload
+# ngrok http --domain=logical-witty-ocelot.ngrok-free.app 8000

@@ -5,3 +5,7 @@ pandas
 scikit-learn
 nltk
 vertexai
+pytesseract 
+pillow
+python-multipart
+opencv-python

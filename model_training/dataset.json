@@ -54,17 +54,25 @@
             "Can you help me figure this out?",
             "I could use some guidance",
             "Can you offer some insight?",
-            "Can you give me some advice?"
+            "Can you give me some advice?",
+            "Thank you so much, I appreciate it!",
+            "I'm a bit lost, can you show me on the map where the nearest restroom is?",
+            "Can you help me with something?",
+            "Hi there! How's it going?"
         ]
     },
     {
         "tag": "suggestion_no",
         "examples": [
+            "what do you need help with?",
             "What is my account balance?",
             "Schedule a meeting with John for next Tuesday.",
             "Remind me to buy groceries tomorrow.",
             "What is the latest news on the Ukraine war?",
             "What is the latest news?",
+            "what's on news?",
+            "news",
+            "latest",
             "What is the latest?",
             "How is the weather in London today?",
             "How is the weather today?",
