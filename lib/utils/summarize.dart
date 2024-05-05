@@ -8,10 +8,10 @@ Future<String> summarizeConversation(List<Message> messages) async {
   String conversation = '';
   for (var message in messages) {
     if (message.isMe) {
-      conversation += '${"User: " + message.englishTranslatedContent}\n';
+      conversation += '${"User: ${message.englishTranslatedContent}"}\n';
     } else {
       conversation +=
-          '${"Second User: " + message.englishTranslatedContent}\n';
+          '${"Second User: ${message.englishTranslatedContent}"}\n';
     }
   }
 
