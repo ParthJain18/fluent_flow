@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../utils/preference_util.dart';
 import 'drop_down_widget.dart';
 
 class TitleWidget extends StatelessWidget {
@@ -30,7 +28,6 @@ class TitleWidget extends StatelessWidget {
         onChangedLanguage: (String? newValue) {
           print(newValue);
           onChangedLanguage1(newValue);
-          PreferenceUtil.setLanguage1(newValue ?? 'English');
         },
       ),
       const Spacer(),
@@ -41,12 +38,11 @@ class TitleWidget extends StatelessWidget {
         onChangedLanguage: (String? newValue) {
           print(newValue);
           onChangedLanguage2(newValue);
-          PreferenceUtil.setLanguage2(newValue ?? 'English');
         },
       ),
       const Spacer(),
       IconButton(
-        icon: const Icon(Icons.save),
+        icon: const Icon(Icons.clear_all),
         onPressed: saveConversation,
       ),
     ],

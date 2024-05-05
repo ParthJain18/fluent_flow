@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:html_unescape/html_unescape.dart';
 
 class TranslationService {
   final _apiKey = 'AIzaSyD2wc2mfo1zr3ZiZ3qf8Dyz3A1g-3K_QDI'; // Replace with your API key
@@ -18,7 +19,10 @@ class TranslationService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['data']['translations'][0]['translatedText'];
+      final translatedContent = data['data']['translations'][0]['translatedText'];
+      final unescape = HtmlUnescape();
+      final decodedContent = unescape.convert(translatedContent);
+      return decodedContent;
     } else {
       throw Exception('Failed to load translation');
     }

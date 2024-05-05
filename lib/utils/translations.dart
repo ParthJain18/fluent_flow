@@ -3,6 +3,7 @@ class Translations {
     'English',
     'Hindi',
     'Marathi',
+    'Japanese',
     'Spanish',
     'French',
     'German',
@@ -18,6 +19,8 @@ class Translations {
         return 'hi';
       case 'Marathi':
         return 'mr';
+      case 'Japanese':
+        return 'ja';
       case 'French':
         return 'fr';
       case 'Italian':

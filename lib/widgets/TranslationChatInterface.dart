@@ -2,19 +2,12 @@ import 'package:fluent_flow/widgets/MessageInputField.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluent_flow/models/message.dart';
-import 'package:flutter/services.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:permission_handler/permission_handler.dart';
-import 'dart:io' show File, Platform;
 import 'package:fluent_flow/services/translation_service.dart';
-import 'package:google_speech/google_speech.dart';
 import '../services/suggestions.dart';
 import '../state/translation_input_state.dart';
 import '../utils/preference_util.dart';
 import '../utils/summarize.dart';
 import '../utils/translations.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:provider/provider.dart';
 import 'MessageList.dart';
 import 'SuggestionList.dart';
@@ -24,7 +17,8 @@ class TranslationChatInterface extends StatefulWidget {
   const TranslationChatInterface({super.key, required this.messageList});
 
   @override
-  _TranslationChatInterfaceState createState() => _TranslationChatInterfaceState();
+  _TranslationChatInterfaceState createState() =>
+      _TranslationChatInterfaceState();
 }
 
 class _TranslationChatInterfaceState extends State<TranslationChatInterface> {
@@ -39,8 +33,7 @@ class _TranslationChatInterfaceState extends State<TranslationChatInterface> {
   // ];
   final ScrollController _controller = ScrollController();
   // final List<String> _suggestions = [];
-  final List<String> _suggestions = ["suggestion1", "suggestion2"];
-  late String _summary = 'Loading Summary...';
+  final List<String> _suggestions = [];
 
   String text = '';
 
@@ -58,11 +51,8 @@ class _TranslationChatInterfaceState extends State<TranslationChatInterface> {
     });
   }
 
-  Future<String> getSummary () async {
+  Future<String> getSummary() async {
     String summary = await summarizeConversation(widget.messageList);
-    setState(() {
-      _summary = summary;
-    });
     return summary;
   }
 
@@ -97,6 +87,8 @@ class _TranslationChatInterfaceState extends State<TranslationChatInterface> {
 
     _messageController.clear();
 
+    print("Target Language: $targetLanguage");
+
     final translatedContent =
         await _translationService.translate(_lastWords, targetLanguage);
 
@@ -116,7 +108,8 @@ class _TranslationChatInterfaceState extends State<TranslationChatInterface> {
 
     setState(() {
       widget.messageList.last.translatedContent = translatedContent;
-      widget.messageList.last.englishTranslatedContent = englishTranslatedContent;
+      widget.messageList.last.englishTranslatedContent =
+          englishTranslatedContent;
       widget.messageList.last.isLoading = false;
     });
 
@@ -160,18 +153,16 @@ class _TranslationChatInterfaceState extends State<TranslationChatInterface> {
           height: MediaQuery.of(context).size.height - 150,
           child: Column(
             children: [
-
-              Expanded(child: MessageList(
-                  messages: widget.messageList,
-                  scrollController: _controller
-              )),
+              Expanded(
+                  child: MessageList(
+                      messages: widget.messageList,
+                      scrollController: _controller)),
               if (_suggestions.isNotEmpty)
                 SuggestionList(
                     suggestions: _suggestions,
                     onTap: (int i) {
                       _messageController.text = _suggestions[i];
                     }),
-
               MessageInputField(
                   messageController: _messageController,
                   onSendPressed: _sendMessage,

@@ -48,16 +48,19 @@ class _MessageInputFieldState extends State<MessageInputField> {
   void startSpeechRecognition() {
     speech.listen(
       onResult: (result) => {
-        print('Recognition result: ${result.recognizedWords}'),
-        widget.messageController.text = result.recognizedWords
+        if (result.finalResult)
+          {
+            print('Final recognition result: ${result.recognizedWords}'),
+            widget.messageController.text = result.recognizedWords,
+            setState(() {
+              _isListening = false;
+            }),
+          }
       },
-      listenFor: const Duration(seconds: 5),
+      listenFor: const Duration(seconds: 3),
       cancelOnError: true,
+      partialResults: false,
     );
-
-    setState(() {
-      _isListening = false;
-    });
   }
 
   void stopSpeechRecognition() {
@@ -97,7 +100,6 @@ class _MessageInputFieldState extends State<MessageInputField> {
     });
   }
 
-
   @override
   void dispose() {
     disposeSpeechRecognition();
@@ -110,8 +112,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         IconButton(
-            onPressed: widget.swapIsMe,
-            icon: const Icon(Icons.swap_horiz_rounded)),
+          onPressed: widget.swapIsMe,
+          icon: const Icon(Icons.swap_horiz_rounded),
+          iconSize: 24,
+        ),
         IconButton(
           onPressed: () {
             Future<String> summaryFuture = widget.summarizeConversation();
@@ -151,7 +155,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
           icon: const Icon(
             CupertinoIcons.sparkles,
             color: Colors.black, // Change icon color here
-            size: 30, // Change icon size here
+            size: 24, // Change icon size here
           ),
         ),
         Expanded(
@@ -166,6 +170,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
                   borderRadius: BorderRadius.all(Radius.circular(8)),
                 ),
               ),
+              style: const TextStyle(fontSize: 14), // Adjust the text size here
             ),
           ),
         ),
@@ -175,10 +180,12 @@ class _MessageInputFieldState extends State<MessageInputField> {
             widget.onSendPressed();
             _scrollToBottom();
           },
+          iconSize: 24,
         ),
         IconButton(
           icon: Icon(_isListening ? Icons.mic_off : Icons.mic),
           onPressed: _toggleListening,
+          iconSize: 24,
         ),
       ],
     );
